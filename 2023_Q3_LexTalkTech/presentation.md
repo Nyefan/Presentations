@@ -59,5 +59,24 @@ delete resources;
 exit 0;
 ```
 ###### <span style="font-size:0.5em;right:30px;text-align:right">*simplified; see the [kubernetes pod lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/) for full details</span>
-
 ---
+### You use at most once semantics
+###### Preferred network call scheme
+```
+function network_call(data):
+  result = HttpClient.verb(data);
+  if result.Ok():
+    return result;
+  else:
+    return retry(network_call, data)
+```
+- the `network_call` should be idempotent
+- 
+---
+### Your retries are too fast
+###### Preferred retry scheme
+```
+function retry(network_call, data):
+  
+```
+### 
