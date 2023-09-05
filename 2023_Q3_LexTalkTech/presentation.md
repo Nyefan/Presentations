@@ -5,8 +5,8 @@ author: "Nyefan"
 keywords: "devops,kubernetes"
 theme: "gaia"
 footer: "LexTalk Tech 2023-09"
-url: "https://nyefan.org/2023_Q3_LexTalkTech"
-image: "https://nyefan.org/2023_Q3_LexTalkTech/icon.webp"
+url: "https://nyefan.org/Presentations/2023_Q3_LexTalkTech"
+image: "https://nyefan.org/Presentations/2023_Q3_LexTalkTech/icon.webp"
 ---
 <!--Good Evening! <pause for response>-->
 <!--How are we doing tonight? <pause for response>-->
@@ -40,43 +40,58 @@ image: "https://nyefan.org/2023_Q3_LexTalkTech/icon.webp"
 ## <br />
 # DEVELOPERS
 ### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">7</span>
-## <span style="color:red;text-decoration:line-through"><span style="color:#455a64">10</span></span><span style="color:red;font-family:monospace;font-size:0.62em;">‸</span>Things I Hate About You
+## <span style="color:red;text-decoration:line-through"><span style="color:#455a64">10</span></span><span style="color:red;font-family:monospace;font-size:0.32em;">‸</span>Things I Hate About You
 <!--Well, 7, actually - we don't have time for 10-->
 
 ---
 ### You don't capture and handle `SIGTERM` and `SIGKILL`
 ###### Kubernetes scale down process*
-```
+```rust
 remove pod from the network load balancers
-send SIGTERM to containers running in pod
+send SIGTERM to containers in pod
 loop 30 seconds:
   if processes have exited:
     delete resources;
     exit 0;
   sleep;
-send SIGKILL to containers running in pod
+send SIGKILL to containers in pod
 delete resources;
 exit 0;
 ```
 ###### <span style="font-size:0.5em;right:30px;text-align:right">*simplified; see the [kubernetes pod lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/) for full details</span>
+
 ---
 ### You use at most once semantics
-###### Preferred network call scheme
-```
+###### Example network call scheme
+```rust
 function network_call(data):
   result = HttpClient.verb(data);
-  if result.Ok():
+  if result.ok():
     return result;
+  else if result.error().status_code not in [config.RETRYABLE_ERROR_CODES]:
+    log.error(result.error().error_code);
+    return result.error();
   else:
     return retry(network_call, data)
 ```
 - the `network_call` should be idempotent
-- 
+
 ---
 ### Your retries are too fast
-###### Preferred retry scheme
-```
+###### Example retry scheme
+```rust
 function retry(network_call, data):
-  
+  retry_count = 0
+  delay = config.INITIAL_DELAY;
+  while retry_count <= config.MAX_RETRIES:
+    delay = min(
+      config.MAX_DELAY,
+      delay * config.BACKOFF_FACTOR + rng.range(0.0..1.0) * config.JITTER_FACTOR
+    );
+    sleep(delay);
+    if (network_call(data).ok()) break;
 ```
+- the recursive `network_call` won't work (~~slides only have 10 lines~~)
+
+---
 ### 
