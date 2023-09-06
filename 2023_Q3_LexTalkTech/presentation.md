@@ -4,7 +4,7 @@ description: "Talk for LexTalkTech Fall 2023"
 author: "Nyefan"
 keywords: "devops,kubernetes"
 theme: "gaia"
-footer: "LexTalk Tech 2023-09"
+footer: "LexTalk Tech 2023-10"
 url: "https://nyefan.org/Presentations/2023_Q3_LexTalkTech"
 image: "https://nyefan.org/Presentations/2023_Q3_LexTalkTech/icon.webp"
 ---
@@ -74,7 +74,7 @@ function network_call(data):
   else:
     return retry(network_call, data)
 ```
-- the `network_call` should be idempotent
+###### <span style="font-size:0.5em;right:30px;text-align:right">the `network_call` should be idempotent</span>
 
 ---
 ### Your retries are too fast
@@ -91,7 +91,25 @@ function retry(network_call, data):
     sleep(delay);
     if (network_call(data).ok()) break;
 ```
-- the recursive `network_call` won't work (~~slides only have 10 lines~~)
+###### <span style="font-size:0.5em;right:30px;text-align:right">the recursive `network_call` won't work, but slides only have 10 lines</span>
+
+---
+### You hard code default config variables
+###### Example configuration variable scheme
+```rust
+ENV = os.environ.get("APPNAME_ENV")
+
+function coalesce(env_var_name, config_var_path):
+  return os.environ.get(env_var_name) or 
+    config.read(config_var_path, f"${ENV}.yaml") or 
+    config.read(config_var_path, "defaults.yaml") or 
+    raise Exception()
+
+DOWNSTREAM_SERVICE_URL = coalesce("APPNAME_DOWNSTREAM_SERVICE_URL", "appname.downstream_service.url")
+RETRIES_INITIAL_DELAY  = coalesce("APPNAME_RETRIES_INITIAL_DELAY", "appname.retries.initial_delay")
+RETRIES_MAX_RETRIES    = coalesce("APPNAME_RETRIES_MAX_RETRIES", "appname.retries.max_retries")
+...
+```
 
 ---
 ### 
