@@ -75,7 +75,7 @@ function network_call(data):
     return retry(network_call, data)
     
 ```
-###### <span style="font-size:0.5em">*the `network_call` should be idempotent; see [this presentation's repository]() for a more complete example</span>
+###### <span style="font-size:0.5em">*the `network_call` should be idempotent; see [this presentation's repository](https://github.com/Nyefan/Presentations/blob/main/2023_Q3_LexTalkTech/retry.rs) for a more complete example</span>
 
 ---
 ### Your retries are too fast
