@@ -58,23 +58,24 @@ send SIGKILL to containers in pod
 delete resources;
 exit 0;
 ```
-###### <span style="font-size:0.5em;right:30px;text-align:right">*simplified; see the [kubernetes pod lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/) for full details</span>
+###### <span style="font-size:0.5em">*simplified; see the [kubernetes pod lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/) for full details</span>
 
 ---
 ### You use at most once semantics
-###### Example network call scheme
+###### Example "at least once" network call scheme
 ```rust
 function network_call(data):
   result = HttpClient.verb(data);
   if result.ok():
     return result;
   else if result.error().status_code not in [config.RETRYABLE_ERROR_CODES]:
-    log.error(result.error().error_code);
-    return result.error();
+    log.error(result.error().error_code); 
+    return result.error(); // send to dead letter queue
   else:
     return retry(network_call, data)
+    
 ```
-###### <span style="font-size:0.5em;right:30px;text-align:right">the `network_call` should be idempotent</span>
+###### <span style="font-size:0.5em">*the `network_call` should be idempotent; see [this presentation's repository]() for a more complete example</span>
 
 ---
 ### Your retries are too fast
@@ -82,16 +83,17 @@ function network_call(data):
 ```rust
 function retry(network_call, data):
   retry_count = 0
-  delay = config.INITIAL_DELAY;
+  delay = config.INITIAL_DELAY_MS;
   while retry_count <= config.MAX_RETRIES:
     delay = min(
-      config.MAX_DELAY,
-      delay * config.BACKOFF_FACTOR + rng.range(0.0..1.0) * config.JITTER_FACTOR
+      config.MAX_DELAY_MS,
+      delay * config.BACKOFF_FACTOR + rng.range(0.0..1.0) * config.JITTER_FACTOR_MS
     );
     sleep(delay);
     if (network_call(data).ok()) break;
+    
 ```
-###### <span style="font-size:0.5em;right:30px;text-align:right">the recursive `network_call` won't work, but slides only have 10 lines</span>
+###### <span style="font-size:0.5em">*the recursive `network_call` won't work, but slides only have 10 lines</span>
 
 ---
 ### You hard code default config variables
@@ -106,10 +108,23 @@ function coalesce(env_var_name, config_var_path):
     raise Exception()
 
 DOWNSTREAM_SERVICE_URL = coalesce("APPNAME_DOWNSTREAM_SERVICE_URL", "appname.downstream_service.url")
-RETRIES_INITIAL_DELAY  = coalesce("APPNAME_RETRIES_INITIAL_DELAY", "appname.retries.initial_delay")
+RETRIES_INITIAL_DELAY_MS  = coalesce("APPNAME_RETRIES_INITIAL_DELAY_MS", "appname.retries.initial_delay_ms")
 RETRIES_MAX_RETRIES    = coalesce("APPNAME_RETRIES_MAX_RETRIES", "appname.retries.max_retries")
 ...
 ```
-
+###### <span style="font-size:0.5em">*see the [spring boot properties hierarchy](https://docs.spring.io/spring-boot/docs/1.5.6.RELEASE/reference/html/boot-features-external-config.html) for a more complete list</span>
 ---
-### 
+### Your logs don't report the source of errors
+###### Rules for good logs <img height="96" src="error.png" style="float:right;margin:100px 10px -120px 0px" title="Error, an error ocurred"/>
+```
+Use log levels 
+    TRACE, DEBUG, INFO, WARN, ERROR, FATAL
+Prefer structured logging formats 
+    json, logfmt, avro/protobuf
+Avoid multiline logs 
+    yaml, formatted stack traces
+Include relevant program state 
+    userID, sessionID, txnID, flattened stack traces
+```
+
+
