@@ -1,17 +1,15 @@
 ---
-title: "11 Things I Hate About You"
+title: "Things I Hate About Developers"
 description: "Talk for LexTalkTech Fall 2023"
 author: "Nyefan"
-keywords: "devops,kubernetes"
 theme: "gaia"
-footer: "LexTalk Tech 2023-10"
-url: "https://nyefan.org/Presentations/2023_Q3_LexTalkTech"
-image: "https://nyefan.org/Presentations/2023_Q3_LexTalkTech/icon.webp"
+footer: "LexTalk Tech 2023-10-12"
+url: "https://nyefan.org/slides/2023-10-12-LexTalk-Tech.html"
 ---
 <!--Good Evening! <pause for response>-->
 <!--How are we doing tonight? <pause for response>-->
 <!--I only have 15 minutes here, so we're gonna go fast.-->
-<!--This presentation and the presenter notes will be available at presentations.nyefan.org if you want to see it again-->
+<!--This presentation and the presenter notes will be available at nyefan.org if you want to see it again-->
 <!--The code for this presentation is available at github.com/Nyefan/Presentations-->
 
 ---
@@ -108,23 +106,51 @@ function coalesce(env_var_name, config_var_path):
     raise Exception()
 
 DOWNSTREAM_SERVICE_URL = coalesce("APPNAME_DOWNSTREAM_SERVICE_URL", "appname.downstream_service.url")
-RETRIES_INITIAL_DELAY_MS  = coalesce("APPNAME_RETRIES_INITIAL_DELAY_MS", "appname.retries.initial_delay_ms")
-RETRIES_MAX_RETRIES    = coalesce("APPNAME_RETRIES_MAX_RETRIES", "appname.retries.max_retries")
+RETRIES_INITIAL_DELAY_MS = coalesce("APPNAME_RETRIES_INITIAL_DELAY_MS", "appname.retries.initial_delay_ms")
+RETRIES_MAX_DELAY_MS = coalesce("APPNAME_RETRIES_MAX_DELAY_MS", "appname.retries.max_delay_ms")
+RETRIES_MAX_RETRIES = coalesce("APPNAME_RETRIES_MAX_RETRIES", "appname.retries.max_retries")
 ...
+
 ```
-###### <span style="font-size:0.5em">*see the [spring boot properties hierarchy](https://docs.spring.io/spring-boot/docs/1.5.6.RELEASE/reference/html/boot-features-external-config.html) for a more complete list</span>
+###### <span style="font-size:0.5em">*see the [spring boot properties hierarchy](https://docs.spring.io/spring-boot/docs/1.5.6.RELEASE/reference/html/boot-features-external-config.html) for a more complete (and arguably overengineered) list</span>
+
 ---
 ### Your logs don't report the source of errors
-###### Rules for good logs <img height="96" src="error.png" style="float:right;margin:100px 10px -120px 0px" title="Error, an error ocurred"/>
+###### Rules for good logs <img height="96" src="error.png" style="float:right;margin:230px 10px -250px 0px" title="Error, an error ocurred"/>
+```json
+{
+"Use log levels":
+    ["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"],
+"Prefer structured logging formats":
+    ["json", "logfmt", "avro", "protobuf"],
+"Avoid multiline logs":
+    ["yaml", "formatted stack traces"],
+"Include relevant program state": 
+    ["ISO8601 time", "userID", "sessionID", "txnID", "flattened stack traces"]
+}
 ```
-Use log levels 
-    TRACE, DEBUG, INFO, WARN, ERROR, FATAL
-Prefer structured logging formats 
-    json, logfmt, avro/protobuf
-Avoid multiline logs 
-    yaml, formatted stack traces
-Include relevant program state 
-    userID, sessionID, txnID, flattened stack traces
+###### <span style="font-size:0.5em">*</span>
+
+---
+### You don't speak up
+###### Casual bigotry pushes marginalized groups out of the industry
 ```
+Cisgender Women, Queer People, Neurodivergent People, Disabled People, and 
+BIPOC are all underrepresented among professional software workers.
 
+Women additionally have a huge exit rate relative to men after 5-10 years.
 
+Casual misogyny, queerphobia, nationalism, white supremacy, and ableism are 
+tolerated in this industry, especially from upper management.
+
+A diversity of experience begets a diversity of tactics, which are required 
+for delivering great software and for organizing towards a better world.
+```
+###### <span style="font-size:0.5em">*data pulled from the [stackoverflow developer surveys](https://insights.stackoverflow.com/survey/) and the papers examined in [this 2022 meta-analysis of the literature](https://arxiv.org/pdf/2303.05953.pdf)</span>
+---
+## Thank You For Your Time
+&nbsp;
+##### Davis St. Aubin
+##### Software Engineer and Consultant
+##### consulting@nyefan.org
+##### https://www.nyefan.org/categories/#presentations

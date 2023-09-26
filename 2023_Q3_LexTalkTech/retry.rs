@@ -63,7 +63,6 @@ fn network_operation(data: &str) -> Result<String, &'static str> {
     if data == "some data" {
         Ok("Success!".to_string())
     } else {
-        println!("error");
         Err("Network error")
     }
 }
